@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<!-- 檔案路徑: C:\stock\ETF_VALUE\leverage_etf_calculator.html -->
+<!-- 槓桿 ETF 盤中計算器 - 單一檔案版本 -->
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 槓桿 ETF 盤中計算器</title>
+    <style>
+        /* ==================== 全域樣式 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: #2d3748;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 96vw;
+            height: 96vh;
+            max-width: 1920px;
+            max-height: 1080px;
+            background: #2d3748;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow:
+                20px 20px 60px rgba(0, 0, 0, 0.5),
+                -20px -20px 60px rgba(71, 85, 105, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                width: 98vw;
+                height: 98vh;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100vw;
+                height: 100vh;
+                padding: 10px;
+                border-radius: 0;
+            }
+        }
+
+        /* ==================== 標題區 ==================== */
+        .header {
+            text-align: center;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #e2e8f0;
+            margin-bottom: 2px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #a0aec0;
+        }
+
+        /* ==================== 主要布局 ==================== */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        /* ==================== 第一行：ETF快速選擇 + 範圍 ==================== */
+        .row-one {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .row-one {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== 第二行：正股/ETF/目標/參數 ==================== */
+        .row-two {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 1024px) {
+            .row-two {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .row-two {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        /* ==================== 第三行：結果區 (1/2高度) ==================== */
+        .result-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            max-height: 50vh;
+        }
+
+
+        .section-label {
+            font-size: 20px;
+            font-weight: 600;
+            color: #cbd5e0;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ==================== 輸入組件 ==================== */
+        .input-box {
+            background: #2d3748;
+            padding: 12px;
+            border-radius: 18px;
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.5),
+                inset -6px -6px 12px rgba(71, 85, 105, 0.1);
+        }
+
+        /* ==================== 橫向輸入組件 ==================== */
+        .input-box-horizontal {
+            background: #2d3748;
+            padding: 12px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.5),
+                inset -6px -6px 12px rgba(71, 85, 105, 0.1);
+        }
+
+        .main-label {
+            font-size: 24px;
+            color: #e2e8f0;
+            font-weight: 600;
+            min-width: 45px;
+        }
+
+        .value-input-h {
+            flex: 1;
+            padding: 10px 8px;
+            background: #2d3748;
+            border: none;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: #e2e8f0;
+            outline: none;
+            box-shadow:
+                inset 4px 4px 8px rgba(0, 0, 0, 0.5),
+                inset -4px -4px 8px rgba(71, 85, 105, 0.1);
+        }
+
+        .value-input-h:focus {
+            color: #f7fafc;
+        }
+
+        .value-input-h::placeholder {
+            color: #718096;
+            font-size: 20px;
+        }
+
+        .value-input-h::-webkit-outer-spin-button,
+        .value-input-h::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .value-input-h[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .target-value-h {
+            flex: 1.5;
+            padding: 10px 12px;
+            background: #2d3748;
+            border: none;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #e2e8f0;
+            outline: none;
+            box-shadow:
+                inset 5px 5px 10px rgba(0, 0, 0, 0.5),
+                inset -5px -5px 10px rgba(71, 85, 105, 0.1);
+        }
+
+        .target-value-h:focus {
+            color: #f7fafc;
+        }
+
+        .target-value-h::-webkit-outer-spin-button,
+        .target-value-h::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .target-value-h[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 20px;
+            color: #cbd5e0;
+            min-width: 55px;
+            font-weight: 500;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow:
+                5px 5px 10px rgba(0, 0, 0, 0.5),
+                -5px -5px 10px rgba(71, 85, 105, 0.1);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            box-shadow:
+                3px 3px 6px rgba(0, 0, 0, 0.5),
+                -3px -3px 6px rgba(71, 85, 105, 0.1);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+            box-shadow:
+                inset 8px 8px 16px rgba(0, 0, 0, 0.6),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        .value-input {
+            flex: 1;
+            max-width: 240px;
+            padding: 16px 20px;
+            background: #2d3748;
+            border: none;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: #e2e8f0;
+            outline: none;
+            box-shadow:
+                inset 4px 4px 8px rgba(0, 0, 0, 0.5),
+                inset -4px -4px 8px rgba(71, 85, 105, 0.1);
+        }
+
+        .value-input:focus {
+            color: #f7fafc;
+        }
+
+        /* 隱藏數字輸入框的上下箭頭 */
+        .value-input::-webkit-outer-spin-button,
+        .value-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .value-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .target-value::-webkit-outer-spin-button,
+        .target-value::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .target-value[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* ==================== ETF 預設選擇 ==================== */
+        .etf-preset {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .etf-preset {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .etf-preset {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .preset-buttons {
+            display: contents;
+        }
+
+        .preset-btn {
+            padding: 20px 12px;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            box-shadow:
+                4px 4px 8px rgba(0, 0, 0, 0.5),
+                -4px -4px 8px rgba(71, 85, 105, 0.1);
+        }
+
+        .preset-btn:hover {
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            box-shadow:
+                3px 3px 6px rgba(0, 0, 0, 0.5),
+                -3px -3px 6px rgba(71, 85, 105, 0.1);
+        }
+
+        .preset-btn:active {
+            transform: scale(0.96);
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.6),
+                inset -3px -3px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        .preset-btn.active {
+            transform: scale(0.98);
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.5),
+                inset -3px -3px 6px rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+        }
+
+        /* ==================== 目標價區域 ==================== */
+        .target-box {
+            background: #2d3748;
+            padding: 12px;
+            border-radius: 18px;
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.5),
+                inset -6px -6px 12px rgba(71, 85, 105, 0.1);
+        }
+
+        .target-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .target-btn {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            box-shadow:
+                5px 5px 10px rgba(0, 0, 0, 0.5),
+                -5px -5px 10px rgba(71, 85, 105, 0.1);
+        }
+
+        .target-btn:hover {
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            box-shadow:
+                4px 4px 8px rgba(0, 0, 0, 0.5),
+                -4px -4px 8px rgba(71, 85, 105, 0.1);
+        }
+
+        .target-btn:active {
+            transform: scale(0.92);
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+            box-shadow:
+                inset 10px 10px 20px rgba(0, 0, 0, 0.7),
+                inset -5px -5px 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .target-value {
+            flex: 1;
+            max-width: 280px;
+            padding: 20px 28px;
+            background: #2d3748;
+            border: none;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #e2e8f0;
+            outline: none;
+            box-shadow:
+                inset 5px 5px 10px rgba(0, 0, 0, 0.5),
+                inset -5px -5px 10px rgba(71, 85, 105, 0.1);
+        }
+
+        .target-value:focus {
+            color: #f7fafc;
+        }
+
+        /* ==================== 結果表格容器 ==================== */
+        .result-table-container {
+            flex: 1;
+            overflow: hidden;
+            background: #2d3748;
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow:
+                inset 8px 8px 16px rgba(0, 0, 0, 0.5),
+                inset -8px -8px 16px rgba(71, 85, 105, 0.1);
+        }
+
+        /* ==================== 結果表格佈局 ==================== */
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .result-column {
+            background: #2d3748;
+            padding: 8px;
+            border-radius: 15px;
+            box-shadow:
+                5px 5px 10px rgba(0, 0, 0, 0.5),
+                -5px -5px 10px rgba(71, 85, 105, 0.1);
+        }
+
+        .column-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #cbd5e0;
+            text-align: center;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .result-table th {
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 20px;
+            color: #a0aec0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .result-table td {
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 22px;
+            color: #cbd5e0;
+            font-weight: 500;
+        }
+
+        .result-table tbody tr {
+            transition: all 0.15s;
+        }
+
+        .result-table tbody tr:hover {
+            background: rgba(71, 85, 105, 0.3);
+        }
+
+        .result-table .target-row {
+            background: rgba(236, 72, 153, 0.15);
+            box-shadow:
+                inset 2px 2px 4px rgba(0, 0, 0, 0.3),
+                inset -2px -2px 4px rgba(71, 85, 105, 0.1);
+        }
+
+        .result-table .target-row td {
+            color: #f472b6;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .offset-cell {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+
+        /* ==================== 隱藏類別 ==================== */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 標題區 -->
+        <div class="header">
+            <div class="title">⚡ 槓桿 ETF 盤中計算器</div>
+            <div class="subtitle">16:9 單一畫面 | 所有資訊一目了然</div>
+        </div>
+
+        <!-- 主要內容區 -->
+        <div class="main-content">
+            <!-- 第一行：ETF快速選擇 + 參數 -->
+            <div class="row-one">
+                <div class="etf-preset">
+                    <button class="preset-btn" onclick="loadPreset('TSLL')">TSLL</button>
+                    <button class="preset-btn" onclick="loadPreset('MVLL')">MVLL</button>
+                    <button class="preset-btn" onclick="loadPreset('TSLT')">TSLT</button>
+                    <button class="preset-btn" onclick="loadPreset('MUU')">MUU</button>
+                    <button class="preset-btn" onclick="loadPreset('RKLX')">RKLX</button>
+                    <button class="preset-btn" onclick="loadPreset('RKLB')">RKLB</button>
+                    <button class="preset-btn" onclick="loadPreset('LLYX')">LLYX</button>
+                    <button class="preset-btn" onclick="loadPreset('NVDL')">NVDL</button>
+                    <button class="preset-btn" onclick="loadPreset('INTC')">INTC</button>
+                    <button class="preset-btn" onclick="loadPreset('GGLL')">GGLL</button>
+                </div>
+
+                <!-- 參數資訊 -->
+                <div class="input-box" style="min-width: 400px;">
+                    <div class="section-label" style="text-align: center; margin-bottom: 12px;">參數</div>
+                    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 20px; color: #cbd5e0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>手續費:</span>
+                            <input type="number" class="value-input" id="expenseRatio" value="0.95" step="any" oninput="handleInput('expenseRatio')" style="max-width: 120px; padding: 8px 12px; font-size: 20px;">
+                        </div>
+                        <div style="padding: 8px 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(71, 85, 105, 0.1);">
+                            <div style="font-size: 20px; color: #cbd5e0; display: flex; justify-content: space-between; align-items: center;">
+                                <span>實測: <span id="calculatedLeverageDisplay" style="color: #f472b6; font-weight: 700;">2.00</span>x</span>
+                                <span id="currentPresetLabel" style="color: #f472b6; font-weight: 700;">TSLL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二行：正股 / ETF / 目標 / 範圍 -->
+            <div class="row-two">
+                <!-- 正股 -->
+                <div class="input-box">
+                    <div class="section-label">正股</div>
+                    <div class="control-row">
+                        <span class="control-label">最高</span>
+                        <input type="number" class="value-input" id="stockHigh" value="0" step="any" oninput="handleInput('stockHigh')">
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">最低</span>
+                        <input type="number" class="value-input" id="stockLow" value="0" step="any" oninput="handleInput('stockLow')">
+                    </div>
+                </div>
+
+                <!-- ETF -->
+                <div class="input-box">
+                    <div class="section-label">ETF</div>
+                    <div class="control-row">
+                        <span class="control-label">最高</span>
+                        <input type="number" class="value-input" id="etfHigh" value="0" step="any" oninput="handleInput('etfHigh')">
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">最低</span>
+                        <input type="number" class="value-input" id="etfLow" value="0" step="any" oninput="handleInput('etfLow')">
+                    </div>
+                </div>
+
+                <!-- 目標 -->
+                <div class="target-box">
+                    <div class="section-label">目標</div>
+                    <div class="target-control">
+                        <button class="target-btn" onclick="adjustValue('targetPrice', -0.1)">-</button>
+                        <input type="number" class="target-value" id="targetPrice" value="0.00" step="any" oninput="handleInput('targetPrice')">
+                        <button class="target-btn" onclick="adjustValue('targetPrice', 0.1)">+</button>
+                    </div>
+                </div>
+
+                <!-- 範圍控制 -->
+                <div class="input-box">
+                    <div class="section-label">範圍</div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 16px;">
+                        <button class="control-btn" onclick="adjustValue('stepValue', -0.1)">-</button>
+                        <input type="number" class="value-input" id="stepValue" value="1.00" step="any" oninput="handleInput('stepValue')" style="max-width: 160px;">
+                        <button class="control-btn" onclick="adjustValue('stepValue', 0.1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三行：結果表格 (1/2) -->
+            <div class="result-panel">
+                <div class="result-table-container">
+                    <div class="result-grid">
+                        <!-- 左側：正數檔位 (+5 到 0) -->
+                        <div class="result-column">
+                            <div class="column-title">+ 向上漲幅</div>
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>檔位</th>
+                                        <th>正股價格</th>
+                                        <th>ETF 價格</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultTableBodyPositive">
+                                    <tr>
+                                        <td colspan="3" style="color: #718096; padding: 30px;">請輸入資料並點擊計算</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 右側：負數檔位 (0 到 -5) -->
+                        <div class="result-column">
+                            <div class="column-title">- 向下跌幅</div>
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>檔位</th>
+                                        <th>正股價格</th>
+                                        <th>ETF 價格</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultTableBodyNegative">
+                                    <tr>
+                                        <td colspan="3" style="color: #718096; padding: 30px;">請輸入資料並點擊計算</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 全域變數 ====================
+        const values = {
+            stockHigh: 0,
+            stockLow: 0,
+            etfHigh: 0,
+            etfLow: 0,
+            targetPrice: 0,
+            stepValue: 1.0,
+            leverage: 2.0,        // 使用的槓桿倍數
+            expenseRatio: 0.95    // 年化費用率（百分比）- TSLL 默認值
+        };
+
+        const rangeSteps = 5; // 固定5檔
+
+        let calculatedLeverage = 2; // 實測槓桿倍數（僅顯示用）
+        let currentPreset = 'TSLL'; // 當前選擇的預設
+
+        // ETF 預設資料（2026年實際費用率）
+        const etfPresets = {
+            'TSLL': { name: 'TSLL (Tesla 2x)', leverage: 2.0, expenseRatio: 0.95 },
+            'MVLL': { name: 'MVLL (Marvell 2x)', leverage: 2.0, expenseRatio: 1.5 },
+            'TSLT': { name: 'TSLT (Tesla 2x)', leverage: 2.0, expenseRatio: 1.05 },
+            'MUU': { name: 'MUU (Micron 2x)', leverage: 2.0, expenseRatio: 0.97 },
+            'RKLX': { name: 'RKLX (Rocket Lab 2x)', leverage: 2.0, expenseRatio: 1.31 },
+            'RKLB': { name: 'RKLB (Rocket Lab 正股)', leverage: 1.0, expenseRatio: 0.0 },
+            'LLYX': { name: 'LLYX (Eli Lilly 2x)', leverage: 2.0, expenseRatio: 1.29 },
+            'NVDL': { name: 'NVDL (NVIDIA 2x)', leverage: 2.0, expenseRatio: 1.05 },
+            'INTC': { name: 'INTC (Intel 正股)', leverage: 1.0, expenseRatio: 0.0 },
+            'GGLL': { name: 'GGLL (Google 2x)', leverage: 2.0, expenseRatio: 0.89 },
+            'CUSTOM': { name: '自訂', leverage: 2.0, expenseRatio: 1.5 }
+        };
+
+        /**
+         * 加載 ETF 預設
+         * @param {string} presetName - 預設名稱
+         */
+        function loadPreset(presetName) {
+            if (!etfPresets[presetName]) return;
+
+            const preset = etfPresets[presetName];
+            currentPreset = presetName;
+
+            // 更新數值
+            values.leverage = preset.leverage;
+            values.expenseRatio = preset.expenseRatio;
+
+            // 更新顯示
+            updateDisplay('leverage');
+            updateDisplay('expenseRatio');
+
+            // 更新預設標籤
+            document.getElementById('currentPresetLabel').textContent = presetName;
+
+            // 更新按鈕狀態
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.preset-btn').classList.add('active');
+        }
+
+        /**
+         * 處理用戶輸入
+         * @param {string} key - 數值的鍵名
+         */
+        function handleInput(key) {
+            const element = document.getElementById(key);
+            let value = parseFloat(element.value);
+
+            // 如果是有效數字，更新內部數據
+            if (!isNaN(value)) {
+                values[key] = value;
+
+                // 當4個價格改變時，自動計算槓桿倍數
+                if (['stockHigh', 'stockLow', 'etfHigh', 'etfLow'].includes(key)) {
+                    autoCalculateLeverage();
+                }
+
+                // 當輸入目標價、範圍、槓桿或費率時，自動計算
+                if (['targetPrice', 'stepValue', 'leverage', 'expenseRatio'].includes(key)) {
+                    const { stockHigh, stockLow, etfHigh, etfLow, targetPrice } = values;
+                    if (stockHigh > 0 && stockLow > 0 && etfHigh > 0 && etfLow > 0 && targetPrice > 0) {
+                        calculatePrice();
+                    }
+                }
+            }
+        }
+
+        /**
+         * 調整數值（通用函數）
+         * @param {string} key - 數值的鍵名
+         * @param {number} delta - 調整量
+         */
+        function adjustValue(key, delta) {
+            values[key] = Math.max(0, values[key] + delta);
+
+            // 特殊限制
+            if (key === 'stepValue') {
+                values[key] = Math.max(0.01, values[key]);
+            }
+
+            // 更新顯示
+            updateDisplay(key);
+
+            // 當4個價格改變時，自動計算槓桿倍數
+            if (['stockHigh', 'stockLow', 'etfHigh', 'etfLow'].includes(key)) {
+                autoCalculateLeverage();
+            }
+
+            // 所有+-按鈕都觸發自動計算（如果數據完整）
+            const { stockHigh, stockLow, etfHigh, etfLow, targetPrice } = values;
+            if (stockHigh > 0 && stockLow > 0 && etfHigh > 0 && etfLow > 0 && targetPrice > 0) {
+                calculatePrice();
+            }
+        }
+
+        /**
+         * 更新顯示
+         * @param {string} key - 要更新的元素ID
+         */
+        function updateDisplay(key) {
+            const element = document.getElementById(key);
+            if (!element) return;
+
+            let displayValue = values[key];
+
+            // 格式化顯示
+            if (key === 'expenseRatio') {
+                displayValue = displayValue.toFixed(1);
+            } else {
+                displayValue = displayValue.toFixed(2);
+            }
+
+            element.value = displayValue;
+        }
+
+        /**
+         * 自動計算實測槓桿倍數（僅顯示用）
+         * 根據盤中的4個價格推算實際槓桿倍數
+         * 使用中間價作為基準點，計算雙向波動率，取平均值
+         */
+        function autoCalculateLeverage() {
+            const { stockHigh, stockLow, etfHigh, etfLow } = values;
+
+            // 檢查是否所有值都已輸入
+            if (stockHigh <= 0 || stockLow <= 0 || etfHigh <= 0 || etfLow <= 0) {
+                return;
+            }
+
+            // 檢查數據合理性
+            if (stockHigh <= stockLow || etfHigh <= etfLow) {
+                return;
+            }
+
+            // 計算中間價（平均價）作為基準點
+            const stockMid = (stockHigh + stockLow) / 2;
+            const etfMid = (etfHigh + etfLow) / 2;
+
+            // 計算上漲的槓桿倍數（從中間價到最高價）
+            const stockUpMove = ((stockHigh - stockMid) / stockMid) * 100;  // %
+            const etfUpMove = ((etfHigh - etfMid) / etfMid) * 100;  // %
+            const upLeverage = stockUpMove !== 0 ? etfUpMove / stockUpMove : 0;
+
+            // 計算下跌的槓桿倍數（從中間價到最低價）
+            const stockDownMove = ((stockMid - stockLow) / stockMid) * 100;  // %
+            const etfDownMove = ((etfMid - etfLow) / etfMid) * 100;  // %
+            const downLeverage = stockDownMove !== 0 ? etfDownMove / stockDownMove : 0;
+
+            // 取平均值作為實測槓桿倍數（僅顯示）
+            if (upLeverage !== 0 && downLeverage !== 0) {
+                calculatedLeverage = (upLeverage + downLeverage) / 2;
+
+                // 更新顯示
+                document.getElementById('calculatedLeverageDisplay').textContent = calculatedLeverage.toFixed(2);
+            }
+        }
+
+
+        /**
+         * 核心計算函數 - 計算 ETF 目標價和價格區間
+         * 使用用戶設定的槓桿倍數和費用率
+         */
+        function calculatePrice() {
+            const { stockHigh, stockLow, etfHigh, etfLow, targetPrice, stepValue, leverage, expenseRatio } = values;
+
+            // ========== 驗證輸入 ==========
+            if (stockHigh <= 0 || stockLow <= 0 || etfHigh <= 0 || etfLow <= 0 || targetPrice <= 0) {
+                alert('❌ 請確保所有價格都已設定且大於 0！');
+                return;
+            }
+
+            if (stockHigh <= stockLow) {
+                alert('❌ 正股最高價必須大於最低價！');
+                return;
+            }
+
+            if (etfHigh <= etfLow) {
+                alert('❌ ETF 最高價必須大於最低價！');
+                return;
+            }
+
+            // ========== 步驟 1: 計算中間價（基準價） ==========
+            const stockMid = (stockHigh + stockLow) / 2;
+            const etfMid = (etfHigh + etfLow) / 2;
+
+            // ========== 步驟 2: 計算有效槓桿倍數（考慮費用率） ==========
+            const nominalLeverage = leverage;  // 用戶設定的槓桿倍數
+            const annualExpenseRatio = expenseRatio / 100;  // 轉換為小數
+            const tradingDaysPerYear = 252;
+            const dailyExpense = annualExpenseRatio / tradingDaysPerYear;  // 每日費用
+
+            // 有效槓桿 = 名義槓桿 × (1 - 日費用率)
+            const effectiveLeverage = nominalLeverage * (1 - dailyExpense);
+
+            // ========== 步驟 3: 生成價格區間表格 ==========
+            const priceRange = [];
+            for (let offset = rangeSteps; offset >= -rangeSteps; offset--) {
+                // 計算每一檔的正股價格
+                const stockPrice = targetPrice + (offset * stepValue);
+
+                // 計算正股相對於中間價的變化率（百分比）
+                const stockChangePercent = ((stockPrice - stockMid) / stockMid) * 100;
+
+                // 應用槓桿倍數
+                const etfChangePercent = stockChangePercent * effectiveLeverage;
+
+                // 計算對應的 ETF 價格
+                const etfPrice = etfMid * (1 + etfChangePercent / 100);
+
+                priceRange.push({
+                    offset: offset,
+                    stockPrice: stockPrice,
+                    etfPrice: etfPrice,
+                    isTarget: offset === 0
+                });
+            }
+
+            // ========== 步驟 4: 顯示結果 ==========
+            displayResults(priceRange);
+        }
+
+        /**
+         * 顯示計算結果到表格
+         * @param {Array} priceRange - 價格區間陣列
+         */
+        function displayResults(priceRange) {
+            const tableBodyPositive = document.getElementById('resultTableBodyPositive');
+            const tableBodyNegative = document.getElementById('resultTableBodyNegative');
+
+            // 清空舊資料
+            tableBodyPositive.innerHTML = '';
+            tableBodyNegative.innerHTML = '';
+
+            // 分離正數和負數檔位（包含 0）
+            const positiveRows = priceRange.filter(row => row.offset >= 0).reverse(); // +5 到 0
+            const negativeRows = priceRange.filter(row => row.offset <= 0); // 0 到 -5
+
+            // 生成正數檔位表格行
+            positiveRows.forEach(row => {
+                const tr = document.createElement('tr');
+                if (row.isTarget) {
+                    tr.className = 'target-row';
+                }
+
+                tr.innerHTML = `
+                    <td class="offset-cell">${row.offset > 0 ? '+' : ''}${row.offset}</td>
+                    <td>$${row.stockPrice.toFixed(2)}</td>
+                    <td>$${row.etfPrice.toFixed(2)}</td>
+                `;
+
+                tableBodyPositive.appendChild(tr);
+            });
+
+            // 生成負數檔位表格行
+            negativeRows.forEach(row => {
+                const tr = document.createElement('tr');
+                if (row.isTarget) {
+                    tr.className = 'target-row';
+                }
+
+                tr.innerHTML = `
+                    <td class="offset-cell">${row.offset}</td>
+                    <td>$${row.stockPrice.toFixed(2)}</td>
+                    <td>$${row.etfPrice.toFixed(2)}</td>
+                `;
+
+                tableBodyNegative.appendChild(tr);
+            });
+        }
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化所有顯示
+            Object.keys(values).forEach(key => {
+                updateDisplay(key);
+            });
+
+            // 初始計算實測槓桿倍數
+            autoCalculateLeverage();
+
+            // 設置 TSLL 為默認選中
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                if (btn.textContent.includes('TSLL')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // 支援 Enter 鍵觸發計算
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        calculatePrice();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
