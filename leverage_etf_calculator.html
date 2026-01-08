@@ -96,18 +96,11 @@
             }
         }
 
-        /* ==================== 第二行：正股/ETF/目標/參數 ==================== */
+        /* ==================== 第二行：價格輸入 / 目標範圍 ==================== */
         .row-two {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
-        }
-
-        @media (max-width: 1024px) {
-            .row-two {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -115,6 +108,48 @@
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
+        }
+
+        /* 價格輸入區塊（正股+ETF） */
+        .price-input-box {
+            background: #2d3748;
+            padding: 12px;
+            border-radius: 18px;
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.5),
+                inset -6px -6px 12px rgba(71, 85, 105, 0.1);
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .price-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* 目標範圍區塊（目標+範圍） */
+        .target-range-box {
+            background: #2d3748;
+            padding: 12px;
+            border-radius: 18px;
+            box-shadow:
+                inset 6px 6px 12px rgba(0, 0, 0, 0.5),
+                inset -6px -6px 12px rgba(71, 85, 105, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         /* ==================== 第三行：結果區 ==================== */
@@ -380,6 +415,14 @@
                 height: 60px;
                 font-size: 28px;
             }
+
+            .price-input-box {
+                padding: 10px;
+            }
+
+            .target-range-box {
+                padding: 10px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -484,6 +527,25 @@
 
             .target-box {
                 padding: 10px;
+            }
+
+            /* 價格輸入區塊 */
+            .price-input-box {
+                padding: 10px;
+            }
+
+            .price-grid {
+                gap: 8px;
+            }
+
+            .price-column div[style*="font-size: 16px"] {
+                font-size: 13px !important;
+            }
+
+            /* 目標範圍區塊 */
+            .target-range-box {
+                padding: 10px;
+                gap: 12px;
             }
 
             /* 結果面板調整 */
@@ -782,51 +844,60 @@
                 </div>
             </div>
 
-            <!-- 第二行：正股 / ETF / 目標 / 範圍 -->
+            <!-- 第二行：價格輸入 / 目標範圍 -->
             <div class="row-two">
-                <!-- 正股 -->
-                <div class="input-box">
-                    <div class="section-label">正股</div>
-                    <div class="control-row">
-                        <span class="control-label">最高</span>
-                        <input type="number" class="value-input" id="stockHigh" value="0" step="any" oninput="handleInput('stockHigh')" onfocus="this.select()">
-                    </div>
-                    <div class="control-row">
-                        <span class="control-label">最低</span>
-                        <input type="number" class="value-input" id="stockLow" value="0" step="any" oninput="handleInput('stockLow')" onfocus="this.select()">
+                <!-- 價格輸入區塊（正股 + ETF） -->
+                <div class="price-input-box">
+                    <div class="section-label" style="text-align: center;">價格輸入</div>
+                    <div class="price-grid">
+                        <!-- 正股欄 -->
+                        <div class="price-column">
+                            <div style="text-align: center; color: #f472b6; font-weight: 700; font-size: 16px; margin-bottom: 4px;">正股</div>
+                            <div class="control-row">
+                                <span class="control-label">最高</span>
+                                <input type="number" class="value-input" id="stockHigh" value="0" step="any" oninput="handleInput('stockHigh')" onfocus="this.select()">
+                            </div>
+                            <div class="control-row">
+                                <span class="control-label">最低</span>
+                                <input type="number" class="value-input" id="stockLow" value="0" step="any" oninput="handleInput('stockLow')" onfocus="this.select()">
+                            </div>
+                        </div>
+
+                        <!-- ETF欄 -->
+                        <div class="price-column">
+                            <div style="text-align: center; color: #f472b6; font-weight: 700; font-size: 16px; margin-bottom: 4px;">ETF</div>
+                            <div class="control-row">
+                                <span class="control-label">最高</span>
+                                <input type="number" class="value-input" id="etfHigh" value="0" step="any" oninput="handleInput('etfHigh')" onfocus="this.select()">
+                            </div>
+                            <div class="control-row">
+                                <span class="control-label">最低</span>
+                                <input type="number" class="value-input" id="etfLow" value="0" step="any" oninput="handleInput('etfLow')" onfocus="this.select()">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ETF -->
-                <div class="input-box">
-                    <div class="section-label">ETF</div>
-                    <div class="control-row">
-                        <span class="control-label">最高</span>
-                        <input type="number" class="value-input" id="etfHigh" value="0" step="any" oninput="handleInput('etfHigh')" onfocus="this.select()">
+                <!-- 目標範圍區塊（目標 + 範圍） -->
+                <div class="target-range-box">
+                    <!-- 目標價 -->
+                    <div class="control-section">
+                        <div class="section-label" style="text-align: center;">目標價</div>
+                        <div class="target-control">
+                            <button class="target-btn" onclick="adjustValue('targetPrice', -0.1)">-</button>
+                            <input type="number" class="target-value" id="targetPrice" value="0.00" step="any" oninput="handleInput('targetPrice')" onfocus="this.select()">
+                            <button class="target-btn" onclick="adjustValue('targetPrice', 0.1)">+</button>
+                        </div>
                     </div>
-                    <div class="control-row">
-                        <span class="control-label">最低</span>
-                        <input type="number" class="value-input" id="etfLow" value="0" step="any" oninput="handleInput('etfLow')" onfocus="this.select()">
-                    </div>
-                </div>
 
-                <!-- 目標 -->
-                <div class="target-box">
-                    <div class="section-label">目標</div>
-                    <div class="target-control">
-                        <button class="target-btn" onclick="adjustValue('targetPrice', -0.1)">-</button>
-                        <input type="number" class="target-value" id="targetPrice" value="0.00" step="any" oninput="handleInput('targetPrice')" onfocus="this.select()">
-                        <button class="target-btn" onclick="adjustValue('targetPrice', 0.1)">+</button>
-                    </div>
-                </div>
-
-                <!-- 範圍控制 -->
-                <div class="input-box">
-                    <div class="section-label">範圍</div>
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 16px;">
-                        <button class="control-btn" onclick="adjustValue('stepValue', -0.1)">-</button>
-                        <input type="number" class="value-input" id="stepValue" value="1.00" step="any" oninput="handleInput('stepValue')" onfocus="this.select()" style="max-width: 160px;">
-                        <button class="control-btn" onclick="adjustValue('stepValue', 0.1)">+</button>
+                    <!-- 範圍控制 -->
+                    <div class="control-section">
+                        <div class="section-label" style="text-align: center;">範圍</div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 16px;">
+                            <button class="control-btn" onclick="adjustValue('stepValue', -0.1)">-</button>
+                            <input type="number" class="value-input" id="stepValue" value="1.00" step="any" oninput="handleInput('stepValue')" onfocus="this.select()" style="max-width: 160px;">
+                            <button class="control-btn" onclick="adjustValue('stepValue', 0.1)">+</button>
+                        </div>
                     </div>
                 </div>
             </div>
