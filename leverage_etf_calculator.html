@@ -345,7 +345,89 @@
 
         @media (max-width: 768px) {
             .etf-preset {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(5, 1fr);
+                gap: 6px;
+            }
+
+            .preset-btn {
+                padding: 8px 4px;
+                font-size: 11px;
+                border-radius: 8px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 11px;
+            }
+
+            .section-label {
+                font-size: 14px;
+            }
+
+            .control-label {
+                font-size: 14px;
+            }
+
+            .value-input {
+                font-size: 16px;
+                padding: 12px 16px;
+                max-width: 100%;
+            }
+
+            .target-value {
+                font-size: 18px;
+                padding: 14px 20px;
+            }
+
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            .target-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            .column-title {
+                font-size: 14px;
+            }
+
+            .result-table th {
+                font-size: 13px;
+                padding: 10px 6px;
+            }
+
+            .result-table td {
+                font-size: 14px;
+                padding: 10px 6px;
+            }
+
+            .result-table .target-row td {
+                font-size: 15px;
+            }
+
+            .input-box[style*="min-width: 400px"] {
+                min-width: 100% !important;
+            }
+
+            .input-box[style*="min-width: 400px"] input {
+                font-size: 14px !important;
+                padding: 6px 10px !important;
+                max-width: 80px !important;
+            }
+
+            .input-box[style*="min-width: 400px"] div[style*="font-size: 20px"] {
+                font-size: 14px !important;
+            }
+
+            .input-box[style*="min-width: 400px"] div[style*="font-size: 18px"] {
+                font-size: 13px !important;
             }
         }
 
@@ -354,12 +436,12 @@
         }
 
         .preset-btn {
-            padding: 20px 12px;
+            padding: 12px 8px;
             background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
             border: none;
             border-radius: 12px;
             color: #fff;
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
