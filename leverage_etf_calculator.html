@@ -371,7 +371,7 @@
         /* ==================== ETF 預設選擇 ==================== */
         .etf-preset {
             display: grid;
-            grid-template-columns: repeat(10, 1fr);
+            grid-template-columns: repeat(9, 1fr);
             gap: 8px;
         }
 
@@ -862,10 +862,9 @@
                     <button class="preset-btn" onclick="loadPreset('TSLT')">TSLT</button>
                     <button class="preset-btn" onclick="loadPreset('MUU')">MUU</button>
                     <button class="preset-btn" onclick="loadPreset('RKLX')">RKLX</button>
-                    <button class="preset-btn" onclick="loadPreset('RKLB')">RKLB</button>
                     <button class="preset-btn" onclick="loadPreset('LLYX')">LLYX</button>
                     <button class="preset-btn" onclick="loadPreset('NVDL')">NVDL</button>
-                    <button class="preset-btn" onclick="loadPreset('INTC')">INTC</button>
+                    <button class="preset-btn" onclick="loadPreset('INTW')">INTW</button>
                     <button class="preset-btn" onclick="loadPreset('GGLL')">GGLL</button>
                 </div>
 
@@ -1017,10 +1016,9 @@
             'TSLT': { name: 'TSLT (Tesla 2x)', leverage: 2.0, expenseRatio: 1.05 },
             'MUU': { name: 'MUU (Micron 2x)', leverage: 2.0, expenseRatio: 0.97 },
             'RKLX': { name: 'RKLX (Rocket Lab 2x)', leverage: 2.0, expenseRatio: 1.31 },
-            'RKLB': { name: 'RKLB (Rocket Lab 正股)', leverage: 1.0, expenseRatio: 0.0 },
             'LLYX': { name: 'LLYX (Eli Lilly 2x)', leverage: 2.0, expenseRatio: 1.29 },
             'NVDL': { name: 'NVDL (NVIDIA 2x)', leverage: 2.0, expenseRatio: 1.05 },
-            'INTC': { name: 'INTC (Intel 正股)', leverage: 1.0, expenseRatio: 0.0 },
+            'INTW': { name: 'INTW (Intel 2x)', leverage: 2.0, expenseRatio: 1.08 },
             'GGLL': { name: 'GGLL (Google 2x)', leverage: 2.0, expenseRatio: 0.89 },
             'CUSTOM': { name: '自訂', leverage: 2.0, expenseRatio: 1.5 }
         };
